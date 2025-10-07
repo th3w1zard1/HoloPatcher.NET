@@ -1,0 +1,98 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:HoloPatcher.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        x:Class="HoloPatcher.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="HoloPatcher"
+        Width="800" Height="600"
+        MinWidth="400" MinHeight="500">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <DockPanel>
+        <!-- Menu Bar -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Tools">
+                <MenuItem Header="Validate INI" Command="{Binding ValidateIniCommand}"/>
+                <MenuItem Header="Uninstall Mod / Restore Backup" Command="{Binding UninstallModCommand}"/>
+                <MenuItem Header="Fix permissions to file/folder..." Command="{Binding FixPermissionsCommand}"/>
+                <MenuItem Header="Fix iOS Case Sensitivity" Command="{Binding FixCaseSensitivityCommand}"/>
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="DeadlyStream">
+                    <MenuItem Header="Discord" Command="{Binding OpenUrlCommand}" CommandParameter="https://discord.gg/nDkHXfc36s"/>
+                    <MenuItem Header="Website" Command="{Binding OpenUrlCommand}" CommandParameter="https://deadlystream.com"/>
+                </MenuItem>
+                <MenuItem Header="KOTOR Community Portal">
+                    <MenuItem Header="Discord" Command="{Binding OpenUrlCommand}" CommandParameter="https://discord.com/invite/kotor"/>
+                    <MenuItem Header="Website" Command="{Binding OpenUrlCommand}" CommandParameter="https://kotor.neocities.org"/>
+                </MenuItem>
+                <MenuItem Header="Check for Updates" Command="{Binding CheckUpdatesCommand}"/>
+                <MenuItem Header="HoloPatcher Home" Command="{Binding OpenUrlCommand}" CommandParameter="https://deadlystream.com/files/file/2243-holopatcher"/>
+                <MenuItem Header="GitHub Source" Command="{Binding OpenUrlCommand}" CommandParameter="https://github.com/NickHugi/PyKotor"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Status Bar -->
+        <Grid DockPanel.Dock="Bottom" Height="30" Background="{DynamicResource SystemAltMediumColor}">
+            <ProgressBar Value="{Binding ProgressValue}" 
+                         Maximum="{Binding ProgressMaximum}"
+                         IsVisible="{Binding IsTaskRunning}"
+                         Margin="5"/>
+        </Grid>
+
+        <!-- Main Content -->
+        <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="10">
+            <!-- Namespace/Mod Selection -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="5" Margin="0,0,0,5">
+                <ComboBox Width="600"
+                          ItemsSource="{Binding Namespaces}"
+                          SelectedItem="{Binding SelectedNamespace}"
+                          PlaceholderText="Select the mod to install"/>
+                <Button Content="Browse" Command="{Binding BrowseModCommand}"/>
+                <Button Content="?" Width="30" Command="{Binding ShowNamespaceInfoCommand}"/>
+            </StackPanel>
+
+            <!-- Game Path Selection -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="5" Margin="0,0,0,10">
+                <ComboBox Width="600"
+                          ItemsSource="{Binding GamePaths}"
+                          SelectedItem="{Binding SelectedGamePath}"
+                          IsEditable="True"
+                          PlaceholderText="Select your KOTOR directory path"/>
+                <Button Content="Browse" Command="{Binding BrowseGamePathCommand}"/>
+            </StackPanel>
+
+            <!-- Log Text Area -->
+            <Border Grid.Row="2" 
+                    BorderBrush="{DynamicResource SystemBaseLowColor}" 
+                    BorderThickness="1"
+                    Margin="0,0,0,10">
+                <ScrollViewer>
+                    <TextBox Text="{Binding LogText, Mode=OneWay}" 
+                             IsReadOnly="True"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             BorderThickness="0"/>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Bottom Buttons -->
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                <Button Content="Exit" 
+                        Command="{Binding ExitCommand}"
+                        IsEnabled="{Binding !IsTaskRunning}"/>
+                <Button Content="Install" 
+                        Command="{Binding InstallCommand}"
+                        IsEnabled="{Binding CanInstall}"/>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</Window>
+
