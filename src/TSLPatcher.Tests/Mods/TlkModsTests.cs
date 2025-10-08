@@ -43,7 +43,7 @@ public class TlkModsTests
         dialogTlk.Add("Old1");
         dialogTlk.Add("Old2");
 
-        config.Apply(dialogTlk, memory, logger, 0); // 0 = Game.K1
+        config.Apply(dialogTlk, memory, logger, Game.K1);
 
         dialogTlk.Count.Should().Be(4);
         dialogTlk.Get(2)!.Text.Should().Be("Append2");
@@ -89,7 +89,7 @@ public class TlkModsTests
         dialogTlk.Add("Old3");
         dialogTlk.Add("Old4");
 
-        config.Apply(dialogTlk, memory, logger, 0); // 0 = Game.K1
+        config.Apply(dialogTlk, memory, logger, Game.K1);
 
         dialogTlk.Count.Should().Be(4);
         dialogTlk[0].Text.Should().Be("Old1");
@@ -131,7 +131,7 @@ public class TlkModsTests
         byte[] sourceBytes = writer.Write();
 
         // Patch via PatchResource (this does bytes -> TLK -> modify -> bytes)
-        byte[] patchedBytes = (byte[])config.PatchResource(sourceBytes, memory, logger, 0);
+        byte[] patchedBytes = (byte[])config.PatchResource(sourceBytes, memory, logger, Game.K1);
 
         // Read back the patched TLK
         var reader = new TLKBinaryReader(patchedBytes);

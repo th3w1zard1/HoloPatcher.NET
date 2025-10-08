@@ -6,7 +6,6 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         x:Class="HoloPatcher.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
         Title="HoloPatcher"
         Width="800" Height="600"
         MinWidth="400" MinHeight="500">
@@ -41,7 +40,7 @@
 
         <!-- Status Bar -->
         <Grid DockPanel.Dock="Bottom" Height="30" Background="{DynamicResource SystemAltMediumColor}">
-            <ProgressBar Value="{Binding ProgressValue}" 
+            <ProgressBar Value="{Binding ProgressValue}"
                          Maximum="{Binding ProgressMaximum}"
                          IsVisible="{Binding IsTaskRunning}"
                          Margin="5"/>
@@ -64,18 +63,17 @@
                 <ComboBox Width="600"
                           ItemsSource="{Binding GamePaths}"
                           SelectedItem="{Binding SelectedGamePath}"
-                          IsEditable="True"
                           PlaceholderText="Select your KOTOR directory path"/>
                 <Button Content="Browse" Command="{Binding BrowseGamePathCommand}"/>
             </StackPanel>
 
             <!-- Log Text Area -->
-            <Border Grid.Row="2" 
-                    BorderBrush="{DynamicResource SystemBaseLowColor}" 
+            <Border Grid.Row="2"
+                    BorderBrush="{DynamicResource SystemBaseLowColor}"
                     BorderThickness="1"
                     Margin="0,0,0,10">
                 <ScrollViewer>
-                    <TextBox Text="{Binding LogText, Mode=OneWay}" 
+                    <TextBox Text="{Binding LogText, Mode=OneWay}"
                              IsReadOnly="True"
                              TextWrapping="Wrap"
                              AcceptsReturn="True"
@@ -85,10 +83,10 @@
 
             <!-- Bottom Buttons -->
             <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-                <Button Content="Exit" 
+                <Button Content="Exit"
                         Command="{Binding ExitCommand}"
                         IsEnabled="{Binding !IsTaskRunning}"/>
-                <Button Content="Install" 
+                <Button Content="Install"
                         Command="{Binding InstallCommand}"
                         IsEnabled="{Binding CanInstall}"/>
             </StackPanel>

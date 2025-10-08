@@ -172,7 +172,7 @@ public class ModInstaller
         var memory = new PatcherMemory();
         var config = Config();
 
-        var patchesList = new List<PatcherModification>();
+        var patchesList = new List<PatcherModifications>();
         patchesList.AddRange(config.InstallList);
         // Note: TSLPatcher executes [InstallList] after [TLKList]
         patchesList.AddRange(GetTLKPatches(config));
@@ -214,10 +214,10 @@ public class ModInstaller
     /// <summary>
     /// Gets TLK patches from the configuration.
     /// </summary>
-    private List<PatcherModification> GetTLKPatches(PatcherConfig config)
+    private List<PatcherModifications> GetTLKPatches(PatcherConfig config)
     {
         // TODO: Implement TLK patch extraction
-        return new List<PatcherModification>();
+        return new List<PatcherModifications>();
     }
 }
 

@@ -19,7 +19,7 @@ A complete rewrite of HoloPatcher in C#/.NET with Avalonia UI framework.
 - ✅ Namespace support (PatcherNamespace)
 - ✅ Menu system (Tools, Help)
 - ✅ Progress tracking
-- ✅ Modification infrastructure (PatcherModifications base class)
+- ✅ Modification infrastructure (PatcherModification base class)
 - ✅ 2DA modification system:
   - RowValue classes (Constant, 2DAMemory, TLKMemory, High, RowIndex, RowLabel, RowCell)
   - Target resolution (RowIndex, RowLabel, LabelColumn)

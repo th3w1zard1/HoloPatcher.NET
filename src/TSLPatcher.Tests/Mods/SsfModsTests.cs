@@ -1,3 +1,4 @@
+using TSLPatcher.Core.Common;
 using TSLPatcher.Core.Formats.SSF;
 using TSLPatcher.Core.Logger;
 using TSLPatcher.Core.Memory;
@@ -29,8 +30,8 @@ public class SsfModsTests
         // Python does: ssf = read_ssf(config.patch_resource(bytes_ssf(ssf), memory, PatchLogger(), Game.K1))
         // Full round-trip through bytes
         var writer = new SSFBinaryWriter(ssf);
-        byte[] data = writer.Write();
-        byte[] patchedData = (byte[])config.PatchResource(data, memory, new PatchLogger(), 1);
+        var data = writer.Write();
+        var patchedData = (byte[])config.PatchResource(data, memory, new PatchLogger(), Game.K2);
         var reader = new SSFBinaryReader(patchedData);
         ssf = reader.Load();
 
@@ -45,16 +46,15 @@ public class SsfModsTests
     public void TestAssign2DAToken()
     {
         var ssf = new SSF();
-        var memory = new PatcherMemory();
-        memory.Memory2DA[5] = "123";
+        var memory = new PatcherMemory { Memory2DA = { [5] = "123" } };
 
         var config = new ModificationsSSF("", false);
         config.Modifiers.Add(new ModifySSF(SSFSound.BATTLE_CRY_2, new TokenUsage2DA(5)));
 
         // Full round-trip through bytes
         var writer = new SSFBinaryWriter(ssf);
-        byte[] data = writer.Write();
-        byte[] patchedData = (byte[])config.PatchResource(data, memory, new PatchLogger(), 1);
+        var data = writer.Write();
+        var patchedData = (byte[])config.PatchResource(data, memory, new PatchLogger(), Game.K2);
         var reader = new SSFBinaryReader(patchedData);
         ssf = reader.Load();
 
@@ -69,16 +69,15 @@ public class SsfModsTests
     public void TestAssignTLKToken()
     {
         var ssf = new SSF();
-        var memory = new PatcherMemory();
-        memory.MemoryStr[5] = 321;
+        var memory = new PatcherMemory { MemoryStr = { [5] = 321 } };
 
         var config = new ModificationsSSF("", false);
         config.Modifiers.Add(new ModifySSF(SSFSound.BATTLE_CRY_3, new TokenUsageTLK(5)));
 
         // Full round-trip through bytes
         var writer = new SSFBinaryWriter(ssf);
-        byte[] data = writer.Write();
-        byte[] patchedData = (byte[])config.PatchResource(data, memory, new PatchLogger(), 1);
+        var data = writer.Write();
+        var patchedData = (byte[])config.PatchResource(data, memory, new PatchLogger(), Game.K2);
         var reader = new SSFBinaryReader(patchedData);
         ssf = reader.Load();
 

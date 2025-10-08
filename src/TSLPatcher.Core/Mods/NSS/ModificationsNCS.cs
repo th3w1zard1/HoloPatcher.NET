@@ -14,27 +14,52 @@ public class ModificationsNCS : PatcherModifications
 {
     public const string DefaultDestination = "Override";
 
-    public string Action { get; set; } = "Hack ";
-
     /// <summary>
     /// List of hack data: (TokenType, Offset, TokenIdOrValue)
     /// TokenType: "StrRef", "2DAMEMORY", "UINT8", "UINT16", "UINT32"
     /// </summary>
     public List<(string TokenType, int Offset, int TokenIdOrValue)> HackData { get; } = new();
 
-    public ModificationsNCS(string filename, bool replace = false, List<object>? modifiers = null)
-        : base(filename, replace, modifiers)
+    public ModificationsNCS(string filename, bool replace = false)
+        : base(filename, replace)
     {
+        Action = "Hack ";
+    }
+
+    public override object PatchResource(
+        byte[] source,
+        PatcherMemory memory,
+        PatchLogger logger,
+        Game game)
+    {
+        Apply(source, memory, logger, game);
+        return source;
+    }
+
+    public override void Apply(
+        object mutableData,
+        PatcherMemory memory,
+        PatchLogger logger,
+        Game game)
+    {
+        if (mutableData is byte[] ncsBytes)
+        {
+            ApplyBinaryPatches(ncsBytes, memory, logger, game);
+        }
+        else
+        {
+            logger.AddError($"Expected byte[] for ModificationsNCS, but got {mutableData.GetType().Name}");
+        }
     }
 
     /// <summary>
     /// Apply binary patches to NCS byte array.
     /// </summary>
-    public void Apply(
+    private void ApplyBinaryPatches(
         byte[] ncsBytes,
         PatcherMemory memory,
         PatchLogger logger,
-        Common.Game game)
+        Game game)
     {
         using var stream = new System.IO.MemoryStream(ncsBytes);
         using var writer = new System.IO.BinaryWriter(stream);

@@ -130,7 +130,7 @@ public class FieldValue2DAMemory : FieldValue
     {
         if (!memory.Memory2DA.ContainsKey(TokenId))
         {
-            throw new NSS.KeyError($"2DAMEMORY{TokenId} was not defined before use");
+            throw new Common.KeyError($"2DAMEMORY{TokenId} was not defined before use");
         }
         return Validate(memory.Memory2DA[TokenId], fieldType);
     }
@@ -153,7 +153,7 @@ public class FieldValueTLKMemory : FieldValue
     {
         if (!memory.MemoryStr.ContainsKey(TokenId))
         {
-            throw new NSS.KeyError($"StrRef{TokenId} was not defined before use!");
+            throw new Common.KeyError($"StrRef{TokenId} was not defined before use!");
         }
         return Validate(memory.MemoryStr[TokenId], fieldType);
     }

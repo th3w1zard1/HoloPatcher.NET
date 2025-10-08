@@ -1,4 +1,5 @@
 using System;
+using TSLPatcher.Core.Common;
 using TSLPatcher.Core.Logger;
 using TSLPatcher.Core.Memory;
 
@@ -7,7 +8,7 @@ namespace TSLPatcher.Core.Mods;
 /// <summary>
 /// Represents a file to be installed/copied during patching.
 /// </summary>
-public class InstallFile : PatcherModification
+public class InstallFile : PatcherModifications
 {
     public InstallFile(string filename, bool replaceExisting = false)
         : base(filename, replaceExisting)
@@ -20,7 +21,7 @@ public class InstallFile : PatcherModification
         byte[] source,
         PatcherMemory memory,
         PatchLogger logger,
-        int game)
+        Game game)
     {
         Apply(source, memory, logger, game);
         return source;
@@ -30,7 +31,7 @@ public class InstallFile : PatcherModification
         object mutableData,
         PatcherMemory memory,
         PatchLogger logger,
-        int game)
+        Game game)
     {
         // InstallFile doesn't modify the file, just copies it
     }

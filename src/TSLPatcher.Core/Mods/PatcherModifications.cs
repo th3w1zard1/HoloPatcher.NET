@@ -1,121 +1,159 @@
+using System;
 using System.Collections.Generic;
+using TSLPatcher.Core.Common;
 using TSLPatcher.Core.Logger;
 using TSLPatcher.Core.Memory;
 
-namespace TSLPatcher.Core.Mods
-{
-    /// <summary>
-    /// Base class for all TSLPatcher modification types.
-    /// Represents a modification that can be applied to game resources.
-    /// </summary>
-    public abstract class PatcherModifications
-    {
-        public const string DefaultDestination = "Override";
+namespace TSLPatcher.Core.Mods;
 
-        protected PatcherModifications(string sourceFile, bool? replace = null)
+/// <summary>
+/// Possible actions for how the patcher should behave when patching a file to a ERF/MOD/RIM
+/// while that filename already exists in the Override folder.
+/// </summary>
+public static class OverrideType
+{
+    /// <summary>Do nothing: don't even check (TSLPatcher default)</summary>
+    public const string IGNORE = "ignore";
+
+    /// <summary>Log a warning (HoloPatcher default)</summary>
+    public const string WARN = "warn";
+
+    /// <summary>Rename the file in the Override folder with the 'old_' prefix. Also logs a warning.</summary>
+    public const string RENAME = "rename";
+}
+
+/// <summary>
+/// Abstract base class for TSLPatcher modifications.
+/// </summary>
+public abstract class PatcherModifications
+{
+    public const string DEFAULT_DESTINATION = "Override";
+
+    public string SourceFile { get; set; }
+    public string SourceFolder { get; set; } = ".";
+    public string SaveAs { get; set; }
+    public bool ReplaceFile { get; set; }
+    public string Destination { get; set; } = DEFAULT_DESTINATION;
+    public string Action { get; set; } = "Patch ";
+    public string OverrideTypeValue { get; set; } = OverrideType.WARN;
+
+    /// <summary>
+    /// Determines how !ReplaceFile will be handled.
+    /// TSLPatcher's InstallList and CompileList are the only patchlists that handle replace behavior differently.
+    /// In InstallList/CompileList, if this is True and !ReplaceFile is False or File#=file_to_install.ext,
+    /// the resource will be skipped if the resource already exists.
+    /// </summary>
+    public bool SkipIfNotReplace { get; set; }
+
+    protected PatcherModifications(string sourcefile, bool? replace = null)
+    {
+        SourceFile = sourcefile;
+        SaveAs = sourcefile;
+        ReplaceFile = replace ?? false;
+    }
+
+    /// <summary>
+    /// Patch the resource defined by the 'source' arg. Returns the bytes data of the result.
+    /// If true is returned as an object, skip this resource.
+    /// </summary>
+    public abstract object PatchResource(
+        byte[] source,
+        PatcherMemory memory,
+        PatchLogger logger,
+        Game game);
+
+    /// <summary>
+    /// Apply this patch's modifications to the mutable_data object argument passed.
+    /// </summary>
+    public abstract void Apply(
+        object mutableData,
+        PatcherMemory memory,
+        PatchLogger logger,
+        Game game);
+
+    /// <summary>
+    /// All optional TSLPatcher vars that can be parsed for a given patch list.
+    /// </summary>
+    public virtual void PopTslPatcherVars(
+        Dictionary<string, string> fileSectionDict,
+        string? defaultDestination = null,
+        string defaultSourceFolder = ".")
+    {
+        // Note: The second argument passed to the 'pop' function is the default.
+
+        if (fileSectionDict.TryGetValue("!SourceFile", out var sourceFile))
         {
             SourceFile = sourceFile;
-            SourceFolder = ".";
-            SaveAs = sourceFile;
-            ReplaceFile = replace ?? false;
-            Destination = DefaultDestination;
-            Action = "Patching";
-            OverrideType = "warn";
-            SkipIfNotReplace = false;
+            fileSectionDict.Remove("!SourceFile");
         }
 
-        /// <summary>
-        /// The source file for the modifications (!SourceFile)
-        /// </summary>
-        public string SourceFile { get; set; }
-
-        /// <summary>
-        /// The source folder relative to tslpatchdata (!SourceFolder)
-        /// </summary>
-        public string SourceFolder { get; set; }
-
-        /// <summary>
-        /// The final name of the file this patch will save as (!SaveAs or !Filename)
-        /// </summary>
-        public string SaveAs { get; set; }
-
-        /// <summary>
-        /// Whether to replace the file (from Replace#= syntax or !ReplaceFile)
-        /// </summary>
-        public bool ReplaceFile { get; set; }
-
-        /// <summary>
-        /// The destination for the patch file (!Destination)
-        /// </summary>
-        public string Destination { get; set; }
-
-        /// <summary>
-        /// The action for this patch (used for logging purposes)
-        /// </summary>
-        public string Action { get; set; }
-
-        /// <summary>
-        /// The override type (!OverrideType: warn, ignore, or rename)
-        /// </summary>
-        public string OverrideType { get; set; }
-
-        /// <summary>
-        /// Determines how !ReplaceFile will be handled in InstallList/CompileList
-        /// </summary>
-        public bool SkipIfNotReplace { get; set; }
-
-        /// <summary>
-        /// Patches the resource and returns the modified bytes, or null to skip.
-        /// </summary>
-        public abstract byte[]? PatchResource(
-            byte[] source,
-            PatcherMemory memory,
-            PatchLogger logger,
-            Game game);
-
-        /// <summary>
-        /// Parses optional TSLPatcher exclamation-point variables from INI sections.
-        /// </summary>
-        public virtual void PopTslPatcherVars(
-            Dictionary<string, string> sectionDict,
-            string? defaultDestination = null,
-            string defaultSourceFolder = ".")
+        // !SaveAs and !Filename are the same
+        if (fileSectionDict.TryGetValue("!Filename", out var filename))
         {
-            if (sectionDict.TryGetValue("!SourceFile", out var sourceFile))
-                SourceFile = sourceFile;
-
-            if (sectionDict.TryGetValue("!ReplaceFile", out var replaceFile))
-                ReplaceFile = ConvertToBool(replaceFile);
-
-            if (sectionDict.TryGetValue("!SaveAs", out var saveAs))
-                SaveAs = saveAs;
-
-            if (sectionDict.TryGetValue("!Filename", out var filename))
-                SaveAs = filename;
-
-            if (sectionDict.TryGetValue("!Destination", out var destination))
-                Destination = destination;
-            else if (defaultDestination != null)
-                Destination = defaultDestination;
-
-            if (sectionDict.TryGetValue("!OverrideType", out var overrideType))
-                OverrideType = overrideType.ToLower();
-
-            if (sectionDict.TryGetValue("!SourceFolder", out var sourceFolder))
-                SourceFolder = sourceFolder;
-            else
-                SourceFolder = defaultSourceFolder;
+            SaveAs = filename;
+            fileSectionDict.Remove("!Filename");
+        }
+        else if (fileSectionDict.TryGetValue("!SaveAs", out var saveAs))
+        {
+            SaveAs = saveAs;
+            fileSectionDict.Remove("!SaveAs");
         }
 
-        protected static bool ConvertToBool(string value)
+        var destinationFallback = defaultDestination ?? DEFAULT_DESTINATION;
+        if (fileSectionDict.TryGetValue("!Destination", out var destination))
         {
-            if (bool.TryParse(value, out var result))
-                return result;
+            Destination = destination;
+            fileSectionDict.Remove("!Destination");
+        }
+        else
+        {
+            Destination = destinationFallback;
+        }
 
-            if (int.TryParse(value, out var intValue))
-                return intValue != 0;
+        // !ReplaceFile=1 is prioritized, see Stoffe's HLFP mod v2.1 for reference
+        if (fileSectionDict.TryGetValue("!ReplaceFile", out var replaceFile))
+        {
+            ReplaceFile = ConvertToBool(replaceFile);
+            fileSectionDict.Remove("!ReplaceFile");
+        }
 
-            return value.Trim().ToLower() == "true";
+        // TSLPatcher defaults to "ignore". However realistically, Override file shadowing is
+        // a major problem, so HoloPatcher defaults to "warn"
+        if (fileSectionDict.TryGetValue("!OverrideType", out var overrideType))
+        {
+            OverrideTypeValue = overrideType.ToLowerInvariant();
+            fileSectionDict.Remove("!OverrideType");
+        }
+
+        if (fileSectionDict.TryGetValue("!SourceFolder", out var sourceFolder))
+        {
+            SourceFolder = sourceFolder;
+            fileSectionDict.Remove("!SourceFolder");
+        }
+        else
+        {
+            SourceFolder = defaultSourceFolder;
         }
     }
+
+    protected static bool ConvertToBool(object value)
+    {
+        if (value is string str)
+        {
+            if (str == "1") return true;
+            if (str == "0") return false;
+
+            // Also try parsing as boolean or integer
+            if (bool.TryParse(str, out var boolResult))
+                return boolResult;
+
+            if (int.TryParse(str, out var intValue))
+                return intValue != 0;
+
+            return str.Trim().ToLower() == "true";
+        }
+        if (value is bool b) return b;
+        return false;
+    }
 }
+

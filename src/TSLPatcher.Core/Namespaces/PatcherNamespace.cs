@@ -15,6 +15,16 @@ public class PatcherNamespace
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
 
+    public PatcherNamespace()
+    {
+    }
+
+    public PatcherNamespace(string iniFilename, string infoFilename)
+    {
+        IniFilename = iniFilename;
+        InfoFilename = infoFilename;
+    }
+
     public string ChangesFilePath()
     {
         return System.IO.Path.Combine(DataFolderPath, IniFilename);

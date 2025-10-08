@@ -10,7 +10,7 @@ namespace TSLPatcher.Tests.Logger;
 public class PatchLoggerTests
 {
     [Fact]
-    public void AddVerbose_ShouldAddLogWithVerboseType()
+    public void AddVerboseShouldAddLogWithVerboseType()
     {
         // Arrange
         var logger = new PatchLogger();
@@ -25,7 +25,7 @@ public class PatchLoggerTests
     }
 
     [Fact]
-    public void AddNote_ShouldAddLogWithNoteType()
+    public void AddNoteShouldAddLogWithNoteType()
     {
         // Arrange
         var logger = new PatchLogger();
@@ -40,7 +40,7 @@ public class PatchLoggerTests
     }
 
     [Fact]
-    public void AddWarning_ShouldAddLogWithWarningType()
+    public void AddWarningShouldAddLogWithWarningType()
     {
         // Arrange
         var logger = new PatchLogger();
@@ -55,7 +55,7 @@ public class PatchLoggerTests
     }
 
     [Fact]
-    public void AddError_ShouldAddLogWithErrorType()
+    public void AddErrorShouldAddLogWithErrorType()
     {
         // Arrange
         var logger = new PatchLogger();
@@ -70,7 +70,7 @@ public class PatchLoggerTests
     }
 
     [Fact]
-    public void LogAdded_EventShouldFireWhenLogAdded()
+    public void LogAddedEventShouldFireWhenLogAdded()
     {
         // Arrange
         var logger = new PatchLogger();
@@ -87,7 +87,7 @@ public class PatchLoggerTests
     }
 
     [Fact]
-    public void VerboseLogs_ShouldFilterByVerboseType()
+    public void VerboseLogsShouldFilterByVerboseType()
     {
         // Arrange
         var logger = new PatchLogger();
@@ -105,7 +105,7 @@ public class PatchLoggerTests
     }
 
     [Fact]
-    public void Notes_ShouldFilterByNoteType()
+    public void NotesShouldFilterByNoteType()
     {
         // Arrange
         var logger = new PatchLogger();
@@ -122,7 +122,7 @@ public class PatchLoggerTests
     }
 
     [Fact]
-    public void Warnings_ShouldFilterByWarningType()
+    public void WarningsShouldFilterByWarningType()
     {
         // Arrange
         var logger = new PatchLogger();
@@ -139,7 +139,7 @@ public class PatchLoggerTests
     }
 
     [Fact]
-    public void Errors_ShouldFilterByErrorType()
+    public void ErrorsShouldFilterByErrorType()
     {
         // Arrange
         var logger = new PatchLogger();
@@ -156,7 +156,7 @@ public class PatchLoggerTests
     }
 
     [Fact]
-    public void MultipleLogTypes_ShouldMaintainOrder()
+    public void MultipleLogTypesShouldMaintainOrder()
     {
         // Arrange
         var logger = new PatchLogger();
@@ -176,7 +176,7 @@ public class PatchLoggerTests
     }
 
     [Fact]
-    public void ThreadSafety_ShouldHandleConcurrentAccess()
+    public async Task ThreadSafetyShouldHandleConcurrentAccess()
     {
         // Arrange
         var logger = new PatchLogger();
@@ -188,7 +188,7 @@ public class PatchLoggerTests
             int index = i;
             tasks.Add(Task.Run(() => logger.AddNote($"Message {index}")));
         }
-        Task.WaitAll(tasks.ToArray());
+        await Task.WhenAll(tasks.ToArray());
 
         // Assert
         logger.AllLogs.Should().HaveCount(100);

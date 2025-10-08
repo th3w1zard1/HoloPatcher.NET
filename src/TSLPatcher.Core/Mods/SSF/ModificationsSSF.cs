@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TSLPatcher.Core.Common;
 using TSLPatcher.Core.Formats.SSF;
 using TSLPatcher.Core.Logger;
 using TSLPatcher.Core.Memory;
@@ -31,22 +32,18 @@ public class ModifySSF
 /// Container for SSF (sound set file) modifications.
 /// Matches Python ModificationsSSF class.
 /// </summary>
-public class ModificationsSSF : PatcherModification
+public class ModificationsSSF(string filename, bool replaceFile, bool noReplacefileCheck = false, List<ModifySSF>? modifiers = null) : PatcherModifications(filename, replaceFile)
 {
-    public List<ModifySSF> Modifiers { get; set; }
-    public bool NoReplacefileCheck { get; set; } = true;
+    public const string DEFAULTDESTINATION = "Override";
+    public static string DefaultDestination => DEFAULTDESTINATION;
 
-    public ModificationsSSF(string filename, bool replaceFile, List<ModifySSF>? modifiers = null)
-        : base(filename, replaceFile)
-    {
-        Modifiers = modifiers ?? new List<ModifySSF>();
-    }
+    public List<ModifySSF> Modifiers { get; set; } = modifiers ?? new List<ModifySSF>();
 
     public override object PatchResource(
         byte[] source,
         PatcherMemory memory,
         PatchLogger logger,
-        int game)
+        Game game)
     {
         var reader = new SSFBinaryReader(source);
         var ssf = reader.Load();
@@ -60,7 +57,7 @@ public class ModificationsSSF : PatcherModification
         object mutableData,
         PatcherMemory memory,
         PatchLogger logger,
-        int game)
+        Game game)
     {
         if (mutableData is not Formats.SSF.SSF ssf)
         {

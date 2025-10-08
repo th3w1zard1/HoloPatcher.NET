@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TSLPatcher.Core.Common;
 using TSLPatcher.Core.Formats.GFF;
 using TSLPatcher.Core.Logger;
 using TSLPatcher.Core.Memory;
@@ -9,8 +10,11 @@ namespace TSLPatcher.Core.Mods.GFF;
 /// Container for GFF file modifications.
 /// 1:1 port from Python ModificationsGFF in pykotor/tslpatcher/mods/gff.py
 /// </summary>
-public class ModificationsGFF : PatcherModification
+public class ModificationsGFF : PatcherModifications
 {
+    public new const string DEFAULT_DESTINATION = "Override";
+    public static string DefaultDestination => DEFAULT_DESTINATION;
+
     public List<ModifyGFF> Modifiers { get; set; } = new();
 
     public ModificationsGFF(string filename, bool replace = false, List<ModifyGFF>? modifiers = null)
@@ -23,7 +27,7 @@ public class ModificationsGFF : PatcherModification
         byte[] source,
         PatcherMemory memory,
         PatchLogger logger,
-        int game)
+        Game game)
     {
         var reader = new GFFBinaryReader(source);
         var gff = reader.Load();
@@ -36,7 +40,7 @@ public class ModificationsGFF : PatcherModification
         object mutableData,
         PatcherMemory memory,
         PatchLogger logger,
-        int game)
+        Game game)
     {
         if (mutableData is Formats.GFF.GFF gff)
         {

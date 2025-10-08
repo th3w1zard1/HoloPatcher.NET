@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TSLPatcher.Core.Common;
 using TSLPatcher.Core.Formats.TwoDA;
 using TSLPatcher.Core.Logger;
 using TSLPatcher.Core.Memory;
@@ -10,8 +11,11 @@ namespace TSLPatcher.Core.Mods.TwoDA;
 /// Container for 2DA file modifications.
 /// 1:1 port from Python Modifications2DA in pykotor/tslpatcher/mods/twoda.py
 /// </summary>
-public class Modifications2DA : PatcherModification
+public class Modifications2DA : PatcherModifications
 {
+    public const string DEFAULTDESTINATION = "Override";
+    public static string DefaultDestination => DEFAULTDESTINATION;
+
     public List<Modify2DA> Modifiers { get; set; } = new();
 
     public Modifications2DA(string filename, List<Modify2DA>? modifiers = null)
@@ -24,7 +28,7 @@ public class Modifications2DA : PatcherModification
         byte[] source,
         PatcherMemory memory,
         PatchLogger logger,
-        int game)
+        Game game)
     {
         var twoda = new TwoDABinaryReader(source).Load();
         Apply(twoda, memory, logger, game);
@@ -35,7 +39,7 @@ public class Modifications2DA : PatcherModification
         object mutableData,
         PatcherMemory memory,
         PatchLogger logger,
-        int game)
+        Game game)
     {
         if (mutableData is not Core.Formats.TwoDA.TwoDA twoda)
         {
@@ -51,12 +55,12 @@ public class Modifications2DA : PatcherModification
             }
             catch (WarningError e)
             {
-                string msg = $"{e.Message} when patching the file '{SaveAs}'";
+                var msg = $"{e.Message} when patching the file '{SaveAs}'";
                 logger.AddWarning(msg);
             }
             catch (Exception e)
             {
-                string msg = $"{e.Message} when patching the file '{SaveAs}'";
+                var msg = $"{e.Message} when patching the file '{SaveAs}'";
                 logger.AddError(msg);
                 break;
             }

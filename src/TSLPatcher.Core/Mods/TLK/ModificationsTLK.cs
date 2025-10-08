@@ -10,7 +10,7 @@ namespace TSLPatcher.Core.Mods.TLK;
 /// Container for TLK (talk table) modifications.
 /// 1:1 port from Python ModificationsTLK in pykotor/tslpatcher/mods/tlk.py
 /// </summary>
-public class ModificationsTLK : PatcherModification
+public class ModificationsTLK : PatcherModifications
 {
     public new const string DEFAULT_DESTINATION = ".";
     public const string DEFAULT_SOURCEFILE = "append.tlk";
@@ -18,8 +18,11 @@ public class ModificationsTLK : PatcherModification
     public const string DEFAULT_SAVEAS_FILE = "dialog.tlk";
     public const string DEFAULT_SAVEAS_FILE_F = "dialogf.tlk";
 
+    public static string DefaultDestination => DEFAULT_DESTINATION;
+
     public List<ModifyTLK> Modifiers { get; set; } = new();
     public string SourcefileF { get; set; } = DEFAULT_SOURCEFILE_F;
+    public new string SourceFile { get; set; } = DEFAULT_SOURCEFILE;
     public new string SaveAs { get; set; } = DEFAULT_SAVEAS_FILE;
 
     public ModificationsTLK(string filename = DEFAULT_SOURCEFILE, bool replaceFile = false, List<ModifyTLK>? modifiers = null)
@@ -33,7 +36,7 @@ public class ModificationsTLK : PatcherModification
         byte[] source,
         PatcherMemory memory,
         PatchLogger logger,
-        int game)
+        Game game)
     {
         var reader = new TLKBinaryReader(source);
         var dialog = reader.Load();
@@ -47,7 +50,7 @@ public class ModificationsTLK : PatcherModification
         object mutableData,
         PatcherMemory memory,
         PatchLogger logger,
-        int game)
+        Game game)
     {
         if (mutableData is Formats.TLK.TLK dialog)
         {
@@ -70,9 +73,9 @@ public class ModificationsTLK : PatcherModification
 /// </summary>
 public class ModifyTLK
 {
-    public string? TlkFilepath { get; set; }
+    public string? TlkFilePath { get; set; }
     public string Text { get; set; } = "";
-    public ResRef Sound { get; set; } = ResRef.FromBlank();
+    public string Sound { get; set; } = "";
 
     public int ModIndex { get; set; }
     public int TokenId { get; set; }
@@ -90,24 +93,24 @@ public class ModifyTLK
         Load();
         if (IsReplacement)
         {
-            dialog.Replace(TokenId, Text, Sound.ToString());
+            dialog.Replace(TokenId, Text, Sound);
             memory.MemoryStr[TokenId] = TokenId;
         }
         else
         {
-            int stringref = dialog.Add(Text, Sound.ToString());
+            int stringref = dialog.Add(Text, Sound);
             memory.MemoryStr[TokenId] = stringref;
         }
     }
 
-    private void Load()
+    public void Load()
     {
-        if (string.IsNullOrEmpty(TlkFilepath))
+        if (string.IsNullOrEmpty(TlkFilePath))
         {
             return;
         }
 
-        // TODO: Implement TalkTable lookup if TlkFilepath is specified
+        // TODO: Implement TalkTable lookup if TlkFilePath is specified
         // This would require implementing the TalkTable class
         // For now, just use the text and sound as-is
     }

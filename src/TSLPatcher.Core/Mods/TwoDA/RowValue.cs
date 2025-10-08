@@ -1,4 +1,5 @@
 using System;
+using TSLPatcher.Core.Common;
 using TSLPatcher.Core.Formats.TwoDA;
 using TSLPatcher.Core.Memory;
 using TSLPatcher.Core.Mods.NSS;
