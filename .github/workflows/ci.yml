@@ -29,8 +29,11 @@ jobs:
       - name: Build
         run: dotnet build --no-restore -c Release
 
+      - name: Build tests
+        run: dotnet build src/TSLPatcher.Tests/TSLPatcher.Tests.csproj --no-restore -c Debug
+
       - name: Test
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build -c Debug --verbosity normal
 
   lint:
     name: Lint
@@ -43,6 +46,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
 
       - name: Run analyzers
         run: dotnet build --no-restore -c Release -p:RunAnalyzersDuringBuild=true

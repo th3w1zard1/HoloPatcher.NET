@@ -159,6 +159,14 @@ When contributing to this port:
 
 This ensures that bug fixes, feature requests, and behavioral changes can be synchronized between the Python and C# implementations.
 
+## CI/CD
+
+This project uses GitHub Actions for continuous integration and automated releases. See [GITHUB_ACTIONS_SETUP.md](GITHUB_ACTIONS_SETUP.md) for details.
+
 ## License
 
-Same license as the original PyKotor project.
+This project is licensed under the Business Source License 1.1 (BSL-1.1). See the [LICENSE](LICENSE) file for details.
+
+**Important**: The BSL is not an Open Source license. The Licensed Work will transition to the GNU General Public License v2.0 or later on 2029-12-31 (Change Date).
+
+**Production Use**: Use of this software in a production environment, to provide services to third parties, or to generate revenue requires explicit authorization from the Licensor (th3w1zard1).
